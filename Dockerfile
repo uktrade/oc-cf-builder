@@ -1,5 +1,10 @@
 FROM cloudfoundry/cflinuxfs2:1.170.0
 
+EXPOSE 8080
+
+LABEL io.openshift.s2i.destination="/opt/s2i/destination" \
+      io.openshift.s2i.scripts-url=image:///usr/libexec/s2i
+
 ENV HEROKUISH_VERSION 0.3.33
 # CloudFoundry buildpack environment variables
 ENV \
@@ -15,11 +20,6 @@ ENV \
 ENV \
     CF_STACK=cflinuxfs2 \
     MEMORY_LIMIT=2G
-
-EXPOSE 8080
-
-LABEL io.openshift.s2i.destination="/opt/s2i/destination" \
-      io.openshift.s2i.scripts-url=image:///usr/libexec/s2i
 
 ENV \
     # Variables copied from OpenShift's s2i-base
