@@ -23,8 +23,8 @@ ENV \
 
 ENV \
     # Variables copied from OpenShift's s2i-base
-    HOME=/home/vcap \
-    PATH=$HOME/src/bin:$HOME/bin:$PATH \
+    HOME=/opt/app-root/src \
+    PATH=/opt/app-root/src/bin:/opt/app-root/bin:$PATH \
     TMPDIR=$HOME/tmp \
     STI_SCRIPTS_PATH=/usr/libexec/s2i \
     # Variables needed by Herokuish for buildpacks
@@ -42,7 +42,7 @@ RUN mkdir -p ${HOME}/.pki/nssdb && \
     chown -R 1001:0 ${HOME}/.pki && \
     useradd -u 1001 -r -g 0 -d ${HOME} -s /sbin/nologin \
         -c "Default Application User" default && \
-    chown -R 1001:0 $HOME
+    chown -R 1001:0 /opt/app-root
 
 WORKDIR ${HOME}
 
