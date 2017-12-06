@@ -46,6 +46,11 @@ RUN mkdir -p ${HOME}/.pki/nssdb && \
 
 WORKDIR ${HOME}
 
+# Copy our OpenShift S2I scripts
+RUN mkdir -p $STI_SCRIPTS_PATH
+COPY bin/assemble bin/run bin/vcap_env /${STI_SCRIPTS_PATH}/
+
+
 # Install Herokuish to detect and run buildpacks
 RUN curl -Lfs https://github.com/gliderlabs/herokuish/releases/download/v{$HEROKUISH_VERSION}/herokuish_${HEROKUISH_VERSION}_linux_x86_64.tgz | tar -xzC /bin && \
     ln -s /bin/herokuish /build && \
@@ -68,17 +73,13 @@ RUN herokuish buildpack install https://github.com/cloudfoundry/nodejs-buildpack
 RUN herokuish buildpack install https://github.com/cloudfoundry/go-buildpack.git v${GO_BUILDPACK_VERSION} go-buildpack
 
 # Install the CloudFoundry Python buildpack
-RUN herokuish buildpack install https://github.com/cloudfoundry/pythono-buildpack.git v${PYTHON_BUILDPACK_VERSION} python-buildpack
+RUN herokuish buildpack install https://github.com/cloudfoundry/python-buildpack.git v${PYTHON_BUILDPACK_VERSION} python-buildpack
 
 # Install the CloudFoundry PHP buildpack
 RUN herokuish buildpack install https://github.com/cloudfoundry/php-buildpack.git v${PHP_BUILDPACK_VERSION} php-buildpack
 
 # Install the CloudFoundry Binary buildpack
 RUN herokuish buildpack install https://github.com/cloudfoundry/binary-buildpack.git v${BINARY_BUILDPACK_VERSION} binary-buildpack
-
-# Copy our OpenShift S2I scripts
-RUN mkdir -p $STI_SCRIPTS_PATH
-COPY bin/assemble bin/run bin/vcap_env /${STI_SCRIPTS_PATH}/
 
 # Tie up loose ends
 RUN mkdir -p /opt/s2i/destination/src \
@@ -90,18 +91,5 @@ RUN mkdir -p /opt/s2i/destination/src \
     && mkdir -p $HOME/tmp \
     && chown -R $USER:$USER $HOME/tmp \
     && chmod -R go+rw $HOME/tmp
-
-# Herokuish is already running as an unprivileged user so stub out
-# any usermod commands it uses.
-# TODO: Long-term, fork Herokuish to work natively on CentOS / RHEL
-RUN mkdir -p $HOME/bin \
-    && echo '' > $HOME/bin/usermod \
-    && echo '' > $HOME/bin/chown \
-    && echo 'shift\neval "$@"' > $HOME/bin/setuidgid \
-    && chmod +x $HOME/bin/*
-
-# Uncomment to enable debug logging for buildpacks
-# ENV TRACE=1 \
-#     JBP_LOG_LEVEL=DEBUG
 
 USER $USER
