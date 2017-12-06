@@ -46,69 +46,35 @@ RUN mkdir -p ${HOME}/.pki/nssdb && \
 
 WORKDIR ${HOME}
 
-
 # Install Herokuish to detect and run buildpacks
 RUN curl -Lfs https://github.com/gliderlabs/herokuish/releases/download/v{$HEROKUISH_VERSION}/herokuish_${HEROKUISH_VERSION}_linux_x86_64.tgz | tar -xzC /bin && \
     ln -s /bin/herokuish /build && \
     ln -s /bin/herokuish /start && \
     ln -s /bin/herokuish /exec
 
-
 # Install the CloudFoundry Staticfile buildpack
-RUN mkdir -p $BUILDPACK_PATH/staticfile-buildpack && \
-    wget -nv -O /tmp/staticfile-buildpack.zip "https://github.com/cloudfoundry/staticfile-buildpack/releases/download/v${STATICFILE_BUILDPACK_VERSION}/staticfile-buildpack-v${STATICFILE_BUILDPACK_VERSION}.zip" && \
-    unzip /tmp/staticfile-buildpack.zip -d $BUILDPACK_PATH/staticfile-buildpack && \
-    rm -f /tmp/staticfile-buildpack.zip
-
+RUN herokuish buildpack install https://github.com/cloudfoundry/staticfile-buildpack.git v${STATICFILE_BUILDPACK_VERSION} staticfile-buildpack
 
 # Install the CloudFoundry Java buildpack
-RUN mkdir -p $BUILDPACK_PATH/java-buildpack && \
-    wget -nv -O /tmp/java-buildpack.zip "https://github.com/cloudfoundry/java-buildpack/releases/download/v${JAVA_BUILDPACK_VERSION}/java-buildpack-offline-v${JAVA_BUILDPACK_VERSION}.zip" && \
-    unzip /tmp/java-buildpack.zip -d $BUILDPACK_PATH/java-buildpack/ && \
-    rm -f /tmp/java-buildpack.zip
-
+RUN herokuish buildpack install https://github.com/cloudfoundry/java-buildpack.git v${JAVA_BUILDPACK_VERSION} java-buildpack
 
 # Install the CloudFoundry Ruby buildpack
-RUN mkdir -p $BUILDPACK_PATH/ruby-buildpack && \
-    wget -nv -O /tmp/ruby-buildpack.zip "https://github.com/cloudfoundry/ruby-buildpack/releases/download/v${RUBY_BUILDPACK_VERSION}/ruby-buildpack-v${RUBY_BUILDPACK_VERSION}.zip" && \
-    unzip /tmp/ruby-buildpack.zip -d $BUILDPACK_PATH/ruby-buildpack/ && \
-    rm -f /tmp/ruby-buildpack.zip
-
+RUN herokuish buildpack install https://github.com/cloudfoundry/ruby-buildpack.git v${RUBY_BUILDPACK_VERSION} ruby-buildpack
 
 # Install the CloudFoundry NodeJS buildpack
-RUN mkdir -p $BUILDPACK_PATH/nodejs-buildpack && \
-    wget -nv -O /tmp/nodejs-buildpack.zip "https://github.com/cloudfoundry/nodejs-buildpack/releases/download/v${NODEJS_BUILDPACK_VERSION}/nodejs-buildpack-v${NODEJS_BUILDPACK_VERSION}.zip" && \
-    unzip /tmp/nodejs-buildpack.zip -d $BUILDPACK_PATH/nodejs-buildpack/ && \
-    rm -f /tmp/nodejs-buildpack.zip
-
+RUN herokuish buildpack install https://github.com/cloudfoundry/nodejs-buildpack.git v${NODEJS_BUILDPACK_VERSION} nodejs-buildpack
 
 # Install the CloudFoundry Go buildpack
-RUN mkdir -p $BUILDPACK_PATH/go-buildpack && \
-    wget -nv -O /tmp/go-buildpack.zip "https://github.com/cloudfoundry/go-buildpack/releases/download/v${GO_BUILDPACK_VERSION}/go-buildpack-v${GO_BUILDPACK_VERSION}.zip" && \
-    unzip /tmp/go-buildpack.zip -d $BUILDPACK_PATH/go-buildpack/ && \
-    rm -f /tmp/go-buildpack.zip
-
+RUN herokuish buildpack install https://github.com/cloudfoundry/go-buildpack.git v${GO_BUILDPACK_VERSION} go-buildpack
 
 # Install the CloudFoundry Python buildpack
-RUN mkdir -p $BUILDPACK_PATH/python-buildpack && \
-    wget -nv -O /tmp/python-buildpack.zip "https://github.com/cloudfoundry/python-buildpack/releases/download/v${PYTHON_BUILDPACK_VERSION}/python-buildpack-v${PYTHON_BUILDPACK_VERSION}.zip" && \
-    unzip /tmp/python-buildpack.zip -d $BUILDPACK_PATH/python-buildpack/ && \
-    rm -f /tmp/python-buildpack.zip
-
+RUN herokuish buildpack install https://github.com/cloudfoundry/pythono-buildpack.git v${PYTHON_BUILDPACK_VERSION} python-buildpack
 
 # Install the CloudFoundry PHP buildpack
-RUN mkdir -p $BUILDPACK_PATH/php-buildpack && \
-    wget -nv -O /tmp/php-buildpack.zip "https://github.com/cloudfoundry/php-buildpack/releases/download/v${PHP_BUILDPACK_VERSION}/php-buildpack-v${PHP_BUILDPACK_VERSION}.zip" && \
-    unzip /tmp/php-buildpack.zip -d $BUILDPACK_PATH/php-buildpack/ && \
-    rm -f /tmp/php-buildpack.zip
-
+RUN herokuish buildpack install https://github.com/cloudfoundry/php-buildpack.git v${PHP_BUILDPACK_VERSION} php-buildpack
 
 # Install the CloudFoundry Binary buildpack
-RUN mkdir -p $BUILDPACK_PATH/binary-buildpack && \
-    wget -nv -O /tmp/binary-buildpack.zip "https://github.com/cloudfoundry/binary-buildpack/releases/download/v${BINARY_BUILDPACK_VERSION}/binary-buildpack-v${BINARY_BUILDPACK_VERSION}.zip" && \
-    unzip /tmp/binary-buildpack.zip -d $BUILDPACK_PATH/binary-buildpack/ && \
-    rm -f /tmp/binary-buildpack.zip
-
+RUN herokuish buildpack install https://github.com/cloudfoundry/binary-buildpack.git v${BINARY_BUILDPACK_VERSION} binary-buildpack
 
 # Copy our OpenShift S2I scripts
 RUN mkdir -p $STI_SCRIPTS_PATH
