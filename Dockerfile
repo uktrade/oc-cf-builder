@@ -35,12 +35,11 @@ ENV APP_PATH=$HOME/app \
 ENV USER=1001 \
     PORT=8080
 
-RUN mkdir -p $TMPDIR
-
 # Setup copied from OpenShift's s2i-base
 RUN mkdir -p ${HOME}/.pki/nssdb && \
     chown -R 1001:0 ${HOME}/.pki && \
     useradd -u 1001 -r -g 0 -d ${HOME} -s /sbin/nologin -c "Default Application User" default && \
+    mkdir -p $TMPDIR && \
     chown -R 1001:0 /opt/app-root
 
 WORKDIR $HOME
