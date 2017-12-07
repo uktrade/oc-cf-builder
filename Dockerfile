@@ -6,9 +6,9 @@ LABEL io.openshift.s2i.destination="/opt/s2i/destination" \
       io.openshift.s2i.scripts-url=image:///usr/libexec/s2i
 
 ENV HEROKUISH_VERSION 0.3.33
+
 # CloudFoundry buildpack environment variables
-ENV \
-    STATICFILE_BUILDPACK_VERSION=1.4.16 \
+ENV STATICFILE_BUILDPACK_VERSION=1.4.16 \
     JAVA_BUILDPACK_VERSION=4.6 \
     RUBY_BUILDPACK_VERSION=1.7.3 \
     NODEJS_BUILDPACK_VERSION=1.6.8 \
@@ -17,39 +17,37 @@ ENV \
     PHP_BUILDPACK_VERSION=4.3.42 \
     BINARY_BUILDPACK_VERSION=1.0.14
 
-ENV \
-    CF_STACK=cflinuxfs2 \
+ENV CF_STACK=cflinuxfs2 \
     MEMORY_LIMIT=2G
 
-ENV \
-    # Variables copied from OpenShift's s2i-base
-    HOME=/opt/app-root/src \
-    PATH=/opt/app-root/src/bin:/opt/app-root/bin:$PATH \
+# Variables copied from OpenShift's s2i-base
+ENV HOME=/opt/app-root/src
+ENV PATH=/opt/app-root/src/bin:/opt/app-root/bin:$PATH \
     TMPDIR=$HOME/tmp \
-    STI_SCRIPTS_PATH=/usr/libexec/s2i \
-    # Variables needed by Herokuish for buildpacks
-    APP_PATH=$HOME/app \
+    STI_SCRIPTS_PATH=/usr/libexec/s2i
+# Variables needed by Herokuish for buildpacks
+ENV APP_PATH=$HOME/app \
     ENV_PATH=$HOME/tmp/env \
     BUILD_PATH=$HOME/tmp/build \
     CACHE_PATH=$HOME/tmp/cache \
-    BUILDPACK_PATH=$HOME/tmp/buildpacks \
-    # Other variables
-    USER=1001 \
+    BUILDPACK_PATH=$HOME/tmp/buildpacks
+# Other variables
+ENV USER=1001 \
     PORT=8080
+
+RUN mkdir -p $TMPDIR
 
 # Setup copied from OpenShift's s2i-base
 RUN mkdir -p ${HOME}/.pki/nssdb && \
     chown -R 1001:0 ${HOME}/.pki && \
-    useradd -u 1001 -r -g 0 -d ${HOME} -s /sbin/nologin \
-        -c "Default Application User" default && \
+    useradd -u 1001 -r -g 0 -d ${HOME} -s /sbin/nologin -c "Default Application User" default && \
     chown -R 1001:0 /opt/app-root
 
-WORKDIR ${HOME}
+WORKDIR $HOME
 
 # Copy our OpenShift S2I scripts
 RUN mkdir -p $STI_SCRIPTS_PATH
 COPY bin/assemble bin/run bin/vcap_env /${STI_SCRIPTS_PATH}/
-
 
 # Install Herokuish to detect and run buildpacks
 RUN curl -Lfs https://github.com/gliderlabs/herokuish/releases/download/v{$HEROKUISH_VERSION}/herokuish_${HEROKUISH_VERSION}_linux_x86_64.tgz | tar -xzC /bin && \
@@ -82,14 +80,24 @@ RUN herokuish buildpack install https://github.com/cloudfoundry/php-buildpack.gi
 RUN herokuish buildpack install https://github.com/cloudfoundry/binary-buildpack.git v${BINARY_BUILDPACK_VERSION} binary-buildpack
 
 # Tie up loose ends
-RUN mkdir -p /opt/s2i/destination/src \
-    && chmod -R go+rw /opt/s2i/destination \
-    && chmod +x $STI_SCRIPTS_PATH/* \
-    && mkdir -p $APP_PATH \
-    && chown -R $USER:$USER $APP_PATH \
-    && chmod -R go+rw $APP_PATH \
-    && mkdir -p $HOME/tmp \
-    && chown -R $USER:$USER $HOME/tmp \
-    && chmod -R go+rw $HOME/tmp
+RUN mkdir -p /opt/s2i/destination/src && \
+    chmod -R go+rw /opt/s2i/destination && \
+    chmod +x $STI_SCRIPTS_PATH/* && \
+    mkdir -p $APP_PATH && \
+    chown -R $USER:$USER $APP_PATH && \
+    chmod -R go+rw $APP_PATH && \
+    mkdir -p $HOME/tmp && \
+    chown -R $USER:$USER $HOME/tmp && \
+    chmod -R go+rw $HOME/tmp && \
+    ln -snf $APP_PATH /app
+
+# Herokuish is already running as an unprivileged user so stub out
+# any usermod commands it uses.
+# TODO: Long-term, fork Herokuish to work natively on CentOS / RHEL
+RUN mkdir -p $HOME/bin \
+    && echo '' > $HOME/bin/usermod \
+    && echo '' > $HOME/bin/chown \
+    && echo 'shift\neval "$@"' > $HOME/bin/setuidgid \
+    && chmod +x $HOME/bin/*
 
 USER $USER
