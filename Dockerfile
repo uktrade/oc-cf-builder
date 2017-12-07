@@ -1,7 +1,4 @@
 FROM cloudfoundry/cflinuxfs2:1.170.0
-
-EXPOSE 8080
-
 LABEL io.openshift.s2i.destination="/opt/s2i/destination" \
       io.openshift.s2i.scripts-url=image:///usr/libexec/s2i
 
@@ -42,6 +39,7 @@ RUN mkdir -p ${HOME}/.pki/nssdb && \
     mkdir -p $TMPDIR && \
     chown -R 1001:0 /opt/app-root
 
+EXPOSE $PORT
 WORKDIR $HOME
 
 # Copy our OpenShift S2I scripts
