@@ -60,7 +60,7 @@ RUN mkdir -p $BUILDPACK_PATH/staticfile-buildpack && \
 
 # Install the CloudFoundry Java buildpack
 RUN mkdir -p $BUILDPACK_PATH/java-buildpack && \
-    wget -nv -O /tmp/java-buildpack.zip "https://github.com/cloudfoundry/java-buildpack/releases/download/v${JAVA_BUILDPACK_VERSION}/java-buildpack-offline-v${JAVA_BUILDPACK_VERSION}.zip" && \
+    wget -nv -O /tmp/java-buildpack.zip "https://github.com/cloudfoundry/java-buildpack/releases/download/v4.7.1/java-buildpack-v${JAVA_BUILDPACK_VERSION}.zip" && \
     unzip /tmp/java-buildpack.zip -d $BUILDPACK_PATH/java-buildpack/ && \
     rm -f /tmp/java-buildpack.zip
 
