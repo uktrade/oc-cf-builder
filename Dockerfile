@@ -102,6 +102,7 @@ RUN mkdir -p $BUILDPACK_PATH/binary-buildpack && \
 
 # Tie up loose ends
 RUN mkdir -p /opt/s2i/destination/src && \
+    chown -R $USER:$USER /opt/s2i/destination/src && \
     chmod -R go+rw /opt/s2i/destination && \
     chmod +x $STI_SCRIPTS_PATH/* && \
     mkdir -p $APP_PATH && \
