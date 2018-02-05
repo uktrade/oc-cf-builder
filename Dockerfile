@@ -12,7 +12,8 @@ ENV STATICFILE_BUILDPACK_VERSION=1.4.20 \
     GO_BUILDPACK_VERSION=1.8.15 \
     PYTHON_BUILDPACK_VERSION=1.6.4 \
     PHP_BUILDPACK_VERSION=4.3.46 \
-    BINARY_BUILDPACK_VERSION=1.0.15
+    BINARY_BUILDPACK_VERSION=1.0.15 \
+    MULTI_BUILDPACK_VERSION=1.0.2
 
 ENV CF_STACK=cflinuxfs2 \
     MEMORY_LIMIT=2G
@@ -99,6 +100,12 @@ RUN mkdir -p $BUILDPACK_PATH/binary-buildpack && \
     wget -nv -O /tmp/binary-buildpack.zip "https://github.com/cloudfoundry/binary-buildpack/releases/download/v${BINARY_BUILDPACK_VERSION}/binary-buildpack-v${BINARY_BUILDPACK_VERSION}.zip" && \
     unzip /tmp/binary-buildpack.zip -d $BUILDPACK_PATH/binary-buildpack/ && \
     rm -f /tmp/binary-buildpack.zip
+
+# Install the CloudFoundry Multi buildpack
+RUN mkdir -p $BUILDPACK_PATH/multi-buildpack && \
+    wget -nv -O /tmp/multi-buildpack.zip "https://github.com/cloudfoundry/multi-buildpack/releases/download/v${MULTI_BUILDPACK_VERSION}/multi-buildpack-v${MULTI_BUILDPACK_VERSION}.zip" && \
+    unzip /tmp/multi-buildpack.zip -d $BUILDPACK_PATH/multi-buildpack/ && \
+    rm -f /tmp/multi-buildpack.zip
 
 # Tie up loose ends
 RUN mkdir -p /opt/s2i/destination/src && \
