@@ -13,22 +13,23 @@ ENV STATICFILE_BUILDPACK_VERSION=1.4.21 \
     PYTHON_BUILDPACK_VERSION=1.6.8 \
     PHP_BUILDPACK_VERSION=4.3.48 \
     BINARY_BUILDPACK_VERSION=1.0.16 \
-    MULTI_BUILDPACK_VERSION=1.0.2
+    MULTI_BUILDPACK_VERSION=1.0.3
 
 ENV CF_STACK=cflinuxfs2 \
     MEMORY_LIMIT=2G
 
 # Variables copied from OpenShift's s2i-base
 ENV HOME=/home/vcap
-ENV PATH=/home/vcap/bin:$PATH \
+ENV PATH=$HOME/bin:$PATH \
     TMPDIR=$HOME/tmp \
     STI_SCRIPTS_PATH=/usr/libexec/s2i
 # Variables needed by Herokuish for buildpacks
 ENV APP_PATH=$HOME/app \
-    ENV_PATH=$HOME/env \
-    BUILD_PATH=$HOME/build \
-    CACHE_PATH=$HOME/cache \
-    BUILDPACK_PATH=$HOME/buildpacks
+    ENV_PATH=$TMPDIR/env \
+    BUILD_PATH=$TMPDIR/build \
+    CACHE_PATH=$TMPDIR/cache \
+    IMPORT_PATH=$TMPDIR/app \
+    BUILDPACK_PATH=$TMPDIR/buildpacks
 # Other variables
 ENV USER=1001 \
     PORT=8080
