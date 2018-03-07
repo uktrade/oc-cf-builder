@@ -19,8 +19,8 @@ ENV CF_STACK=cflinuxfs2 \
     MEMORY_LIMIT=2G
 
 # Variables copied from OpenShift's s2i-base
-ENV HOME=/opt/app-root/src
-ENV PATH=/opt/app-root/src/bin:/opt/app-root/bin:$PATH \
+ENV HOME=/home/vcap//src
+ENV PATH=/home/vcap//src/bin:/home/vcap//bin:$PATH \
     TMPDIR=$HOME/tmp \
     STI_SCRIPTS_PATH=/usr/libexec/s2i
 # Variables needed by Herokuish for buildpacks
@@ -38,7 +38,7 @@ RUN mkdir -p ${HOME}/.pki/nssdb && \
     chown -R 1001:0 ${HOME}/.pki && \
     useradd -u 1001 -r -g 0 -d ${HOME} -s /sbin/nologin -c "Default Application User" default && \
     mkdir -p $TMPDIR && \
-    chown -R 1001:0 /opt/app-root
+    chown -R 1001:0 /home/vcap/
 
 EXPOSE $PORT
 WORKDIR $HOME
@@ -61,7 +61,7 @@ RUN mkdir -p $BUILDPACK_PATH/staticfile-buildpack && \
 
 # Install the CloudFoundry Java buildpack
 RUN mkdir -p $BUILDPACK_PATH/java-buildpack && \
-    wget -nv -O /tmp/java-buildpack.zip "https://github.com/cloudfoundry/java-buildpack/releases/download/v4.7.1/java-buildpack-v${JAVA_BUILDPACK_VERSION}.zip" && \
+    wget -nv -O /tmp/java-buildpack.zip "https://github.com/cloudfoundry/java-buildpack/releases/download/v${JAVA_BUILDPACK_VERSION}/java-buildpack-v${JAVA_BUILDPACK_VERSION}.zip" && \
     unzip /tmp/java-buildpack.zip -d $BUILDPACK_PATH/java-buildpack/ && \
     rm -f /tmp/java-buildpack.zip
 
