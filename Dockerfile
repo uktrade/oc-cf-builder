@@ -19,26 +19,26 @@ ENV CF_STACK=cflinuxfs2 \
     MEMORY_LIMIT=2G
 
 # Variables copied from OpenShift's s2i-base
-ENV HOME=/home/vcap/src
-ENV PATH=/home/vcap/src/bin:/home/vcap/bin:$PATH \
+ENV HOME=/home/vcap
+ENV PATH=/home/vcap/bin:$PATH \
     TMPDIR=$HOME/tmp \
     STI_SCRIPTS_PATH=/usr/libexec/s2i
 # Variables needed by Herokuish for buildpacks
 ENV APP_PATH=$HOME/app \
-    ENV_PATH=$HOME/tmp/env \
-    BUILD_PATH=$HOME/tmp/build \
-    CACHE_PATH=$HOME/tmp/cache \
-    BUILDPACK_PATH=$HOME/tmp/buildpacks
+    ENV_PATH=$HOME/env \
+    BUILD_PATH=$HOME/build \
+    CACHE_PATH=$HOME/cache \
+    BUILDPACK_PATH=$HOME/buildpacks
 # Other variables
 ENV USER=1001 \
     PORT=8080
 
 # Setup copied from OpenShift's s2i-base
-RUN mkdir -p ${HOME}/.pki/nssdb && \
-    chown -R 1001:0 ${HOME}/.pki && \
-    useradd -u 1001 -r -g 0 -d ${HOME} -s /sbin/nologin -c "Default Application User" default && \
+RUN mkdir -p $HOME/.pki/nssdb && \
+    chown -R $USER:0 $HOME/.pki && \
+    useradd -u $USER -r -g 0 -d $HOME -s /sbin/nologin -c "Default Application User" default && \
     mkdir -p $TMPDIR && \
-    chown -R 1001:0 /home/vcap
+    chown -R 1001:0 $HOME
 
 EXPOSE $PORT
 WORKDIR $HOME
@@ -112,12 +112,9 @@ RUN mkdir -p /opt/s2i/destination/src && \
     chown -R $USER:$USER /opt/s2i/destination/src && \
     chmod -R go+rw /opt/s2i/destination && \
     chmod +x $STI_SCRIPTS_PATH/* && \
-    mkdir -p $APP_PATH && \
-    chown -R $USER:$USER $APP_PATH && \
-    chmod -R go+rw $APP_PATH && \
-    mkdir -p $HOME/tmp && \
-    chown -R $USER:$USER $HOME/tmp && \
-    chmod -R go+rw $HOME/tmp && \
+    mkdir -p $APP_PATH $ENV_PATH $BUILD_PATH $CACHE_PATH $TMPDIR && \
+    chown -R $USER:$USER $APP_PATH $ENV_PATH $BUILD_PATH $CACHE_PATH $TMPDIR && \
+    chmod -R go+rw $APP_PATH $ENV_PATH $BUILD_PATH $CACHE_PATH $TMPDIR && \
     ln -snf $APP_PATH /app
 
 # Herokuish is already running as an unprivileged user so stub out
