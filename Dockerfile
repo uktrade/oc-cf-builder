@@ -2,7 +2,7 @@ FROM cloudfoundry/cflinuxfs2:1.189.0
 LABEL io.openshift.s2i.destination="/opt/s2i/destination" \
       io.openshift.s2i.scripts-url=image:///usr/libexec/s2i
 
-ENV HEROKUISH_VERSION 0.3.33
+ENV HEROKUISH_VERSION 0.3.35
 
 # CloudFoundry buildpack environment variables
 ENV STATICFILE_BUILDPACK_VERSION=1.4.21 \
